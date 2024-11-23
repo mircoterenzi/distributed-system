@@ -46,12 +46,18 @@ class Serializer:
             return [self._to_ast(item) for item in obj]
         if isinstance(obj, dict):
             return {key: self._to_ast(value) for key, value in obj.items()}
+        
         # selects the appropriate method to convert the object to AST via reflection
         method_name = f'_{type(obj).__name__.lower()}_to_ast'
         if hasattr(self, method_name):
             data = getattr(self, method_name)(obj)
             data['$type'] = type(obj).__name__
             return data
+        '''
+        In the code above a name is made starting from the type name (in lower case) and hasattr
+        is used to get a function from a name and then used to convert the input to json. If no
+        function is get from hasattr then an error is raised here below.
+        '''
         raise ValueError(f"Unsupported type {type(obj)}")
 
     def _user_to_ast(self, user: User):
